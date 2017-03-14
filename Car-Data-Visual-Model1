@@ -1,0 +1,130 @@
+###
+### BASIC ANALYSIS EXAMPLE
+###
+
+#### Preparing the data 
+
+# Read the file and place in data frame
+dfCar<-read.csv(file="carData.csv",stringsAsFactors = FALSE)
+str(dfCar)
+# Convert to factors
+dfCar$cyl<-factor(dfCar$cyl)
+dfCar$vs<-factor(dfCar$vs)
+dfCar$am<-factor(dfCar$am)
+dfCar$carb<-factor(dfCar$carb)
+dfCar$gear<-factor(dfCar$gear)
+
+# Rename col X
+dfCar=rename(dfCar,Model=X)
+
+# Rename Row
+row.names(dfCar)
+row.names(dfCar) = dfCar$Model
+row.names(dfCar)
+
+
+#### Exploratory Visualization
+
+#--> mpg = f(wt)
+   ## Scatterplot
+  ggplot(dfCar,aes(x=wt,y=mpg)) + geom_point() + 
+    xlab("Weight (1000 pounds)")+ylab("Miles per Gallon")+
+  ggtitle("Exploring mpg=f(wt)")
+  
+  ggplot(dfCar,aes(x=qsec,y=mpg)) + geom_point() + 
+    xlab("Seconds")+ylab("Miles per Gallon")+
+    ggtitle("Exploring mpg=f(qsec)")
+  
+  ggplot(dfCar,aes(x=qsec,y=mpg)) + geom_point() + 
+    xlab("Seconds")+ylab("Miles per Gallon")+
+    ggtitle("Exploring mpg=f(qsec)") +geom_smooth(method="lm")
+  
+  ## Scatterplot with overlay of the linear model  mpg= c0 + c1*wt
+  ggplot(dfCar,aes(x=wt,y=mpg)) + geom_point() + 
+    xlab("Weight (1000 pounds")+ylab("Miles per Gallon")+ ggtitle("Exploring mpg=f(wt)") + 
+    geom_smooth(method="lm")
+
+#--> mpg = f(hp)
+  ## Scatterplot
+  ggplot(dfCar,aes(x=hp,y=mpg)) + geom_point() + 
+    xlab("Horsepower")+ylab("Miles per Gallon")+
+    ggtitle("Exploring mpg=f(hp)")
+  
+  ## Scatterplot with overlay of the linear model  mpg= c0 + c1*wt
+  ggplot(dfCar,aes(x=hp,y=mpg)) + geom_point() + 
+    xlab("Horsepower")+ylab("Miles per Gallon")+ ggtitle("Exploring mpg=f(hp)") + 
+    geom_smooth(method="lm")
+  
+  ## Scatterplot with overlay of the linear model  mpg= c0 + c1*wt
+  ggplot(dfCar,aes(x=hp,y=mpg)) + geom_point() + 
+    xlab("Horsepower")+ylab("Miles per Gallon")+ ggtitle("Exploring mpg=f(hp)") + 
+    geom_smooth()
+  
+#--> mpg = f(disp)
+  ## Scatterplot
+  ggplot(dfCar,aes(x=disp,y=mpg)) + geom_point() + 
+    xlab("Displacement (Cubic Inches)")+ylab("Miles per Gallon")+
+    ggtitle("Exploring mpg=f(hp)")
+  
+  ## Scatterplot with overlay of the linear model  mpg= c0 + c1*disp
+  ggplot(dfCar,aes(x=disp,y=mpg)) + geom_point() + 
+    xlab("Displacement (Cubic Inches)")+ylab("Miles per Gallon")+ ggtitle("Exploring mpg=f(disp)") + 
+    geom_smooth(method="lm")
+  
+  ## Scatterplot with overlay of the nonlinear model  
+  ggplot(dfCar,aes(x=disp,y=mpg)) + geom_point() + 
+    xlab("Displacement (Cubic Inches)")+ylab("Miles per Gallon")+ ggtitle("Exploring mpg=f(disp)") + 
+    geom_smooth()
+  
+#--> mpg = f(wt,cyl)
+  ## Scatterplot
+  ggplot(dfCar,aes(x=wt,y=mpg)) + geom_point() + 
+    xlab("Weight (1000 pounds)")+ylab("Miles per Gallon")+ ggtitle("Exploring mpg=f(wt,cyl)") + 
+    facet_grid((.~cyl))
+  
+  ggplot(dfCar,aes(x=wt,y=mpg)) + geom_point() + 
+    xlab("Weight (1000 pounds)")+ylab("Miles per Gallon")+ ggtitle("Exploring mpg=f(wt,cyl)") + 
+    facet_grid((.~cyl),switch="x")
+  
+  ## Scatterplot with overlay of the linear model  mpg= c0 + c1*wt
+  ggplot(dfCar,aes(x=wt,y=mpg)) + geom_point() + 
+    xlab("Weight (1000 pounds)")+ylab("Miles per Gallon")+ ggtitle("Exploring mpg=f(wt)") + 
+    geom_smooth(method="lm") +
+    facet_grid((.~cyl),switch="x")
+  
+  #--> mpg = f(wt,cyl,am)
+  ## Scatterplot
+  ggplot(dfCar,aes(x=wt,y=mpg)) + geom_point() + 
+    xlab("Weight (1000 pounds)")+ylab("Miles per Gallon")+ ggtitle("Exploring mpg=f(wt,cyl)") + 
+    facet_grid((am~cyl))
+  
+  ggplot(dfCar,aes(x=wt,y=mpg)) + geom_point() + 
+    xlab("Weight (1000 pounds)")+ylab("Miles per Gallon")+ ggtitle("Exploring mpg=f(wt,cyl)") + 
+    facet_grid((am~cyl),switch="both")
+  
+  #### Linear Models
+  myFittedModel<-lm(mpg~wt,data=dfCar)
+  print(summary(myFittedModel))
+  
+  myFittedModelhp<-lm(mpg~hp,data=dfCar)
+  print(summary(myFittedModelhp))
+  
+  myFittedModelhp<-lm(mpg~wt+hp,data=dfCar)
+  print(summary(myFittedModelhp))
+  
+  myFittedModelqs<-lm(mpg~qsec,data=dfCar)
+  print(summary(myFittedModelqs))
+  
+  myFittedModelwtqsec<-lm(mpg~wt+qsec,data=dfCar)
+  print(summary(myFittedModelwtqsec))
+  
+  # Various useful plots
+  Boxplot(mpg ~ cyl, data=dfCar)
+  plot(myFittedModel)
+  residualPlots(myFittedModel)
+  
+  plot(myFittedModelwtqsec)
+  
+  scatterplot(mpg ~ wt, data=dfCar, smoother=loessLine, smoother.args=list(span=1))
+  
+  scatterplot(mpg ~ wt|cyl, data=dfCar, smoother=loessLine, smoother.args=list(span=1))
