@@ -1,0 +1,49 @@
+###
+### BASIC ANALYSIS EXAMPLE
+###
+
+#### Preparing the data 
+
+# Read the file and place in data frame
+dfCar<-read.csv(file="carData.csv",stringsAsFactors = FALSE)
+str(dfCar)
+
+# Rename col X
+dfCar=rename(dfCar,Model=X)
+
+# Rename Row
+row.names(dfCar)
+row.names(dfCar) = dfCar$Model
+row.names(dfCar)
+
+
+# Training and testing data
+# This could split the data in half.  There are other ways to do this.
+TestorTrain<-sample(c("TRAIN","TEST"),nrow(dfCar),replace=TRUE)
+
+dfCar$Classify<-TestorTrain
+dfCarTrain = filter(dfCar,Classify=="TRAIN")
+dfCarTest = filter(dfCar,Classify=="TEST")
+
+
+carTrainingModel<-lm(mpg~wt,data=dfCarTrain)
+
+summary(carTrainingModel)
+summary(lm(mpg~wt,data=dfCar))
+
+
+testPrediction<-predict(carTrainingModel,dfCarTest,se=TRUE)
+
+
+dfCarTest$mpgPredict<-testPrediction$fit
+
+dfCarTest<-mutate(dfCarTest,Diff=mpg-mpgPredict)
+summary(abs(dfCarTest$Diff))
+
+ggplot(dfCarTest,aes(x=wt,y=Diff))+geom_point(color="black",size=4)
+
+ggplot(dfCarTest,aes(x=wt))+geom_point(aes(y=mpg),color="red",size=3) +
+geom_point(aes(y=mpgPredict),color="blue",size=3)
+
+
+
